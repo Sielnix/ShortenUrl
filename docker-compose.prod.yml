@@ -7,14 +7,14 @@ services:
       target: production
     ports:
       - "1234:80"
-    environment:
-      SqlServer__ConnectionString: "Server=db;Database=ShortUrl;UserId=sa;Password=Your_password123;"
   apiapp:
     build:
       context: ./ShortUrl.Api/.
       dockerfile: Dockerfile
     ports:
-      - "7023:443"
+      - "7023:80"
+    environment:
+      SqlServer__ConnectionString: "Server=db;Database=ShortUrl;User Id=sa;Password=Your_password123;"
   db:
     image: "mcr.microsoft.com/mssql/server"
     environment:

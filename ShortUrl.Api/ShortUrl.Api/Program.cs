@@ -26,7 +26,7 @@ namespace ShortUrl.Api
                     string connectionString = serviceProvider.GetRequiredService<IOptions<SqlServerOptions>>().Value
                                                   .ConnectionString
                                               ?? throw new ArgumentException($"{nameof(SqlServerOptions.ConnectionString)} not provided.");
-
+                    
                     ShortUrlContext.ConfigureOptions(dbContextBuilder, connectionString);
                 });
             
@@ -48,16 +48,33 @@ namespace ShortUrl.Api
                 .AllowAnyHeader()
                 .SetPreflightMaxAge(TimeSpan.FromDays(30)));
 
-
             app.MapControllers();
 
-            using (var scope = app.Services.CreateScope())
-            {
-                ShortUrlContext context = scope.ServiceProvider.GetRequiredService<ShortUrlContext>();
-                await context.Database.MigrateAsync();
-            }
+            await EnsureDb(app.Services);
 
             await app.RunAsync();
+        }
+
+        private static async Task EnsureDb(IServiceProvider services)
+        {
+            while (true)
+            {
+                try
+                {
+                    using var scope = services.CreateScope();
+                    ShortUrlContext context = scope.ServiceProvider.GetRequiredService<ShortUrlContext>();
+                    await context.Database.MigrateAsync();
+                    return;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                
+                Console.WriteLine("waiting 10 secs for retry");
+
+                await Task.Delay(10000);
+            }
         }
     }
 }
