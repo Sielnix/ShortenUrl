@@ -1,0 +1,22 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  frontapp:
+    build: 
+      context: ./short-url/.
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "1234:80"
+    environment:
+      SqlServer__ConnectionString: "Server=db;Database=ShortUrl;UserId=sa;Password=Your_password123;"
+  apiapp:
+    build:
+      context: ./ShortUrl.Api/.
+      dockerfile: Dockerfile
+    ports:
+      - "7023:443"
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+      SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
