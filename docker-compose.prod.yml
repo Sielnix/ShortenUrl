@@ -5,6 +5,9 @@ services:
       context: ./short-url/.
       dockerfile: Dockerfile
       target: production
+      args:
+        ApiLocation: "http://localhost:7023/"
+        
     ports:
       - "1234:80"
   apiapp:

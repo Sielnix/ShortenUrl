@@ -1,5 +1,10 @@
 FROM node:18-alpine3.15 AS builder
+ARG ApiLocation
 ENV NODE_ENV production
+ENV REACT_APP_API_ENDPOINT ${ApiLocation}
+
+RUN echo $REACT_APP_API_ENDPOINT
+RUN echo $PATH
 # Add a work directory
 WORKDIR /app
 # Cache and Install dependencies
